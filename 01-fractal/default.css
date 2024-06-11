@@ -1,0 +1,26 @@
+/**/
+
+.container {
+  /*display: flex;*/
+}
+
+.rectangle-1 {
+  background-color: #ffffff;
+  height: 200px;
+  top: 0px;
+  width: 500px;
+}
+
+.rectangle-2 {
+  background-color: #0000ff;
+  height: 200px;
+  top: 200px;
+  width: 500px;
+}
+
+.rectangle-3 {
+  background-color: #ff0000;
+  height: 200px;
+  top: 400px;
+  width: 500px;
+} 

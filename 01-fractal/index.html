@@ -1,0 +1,63 @@
+<!--
+Copyright (C) 2024
+    Computer Graphics Support Group of 30 Phys-Math Lyceum
+-->
+
+<!--
+FILE NAME   : tbs_def.h
+PURPOSE     : main module.
+PROGRAMMER  : CGSG'2023.
+              Ivan Pashkov (IP5),
+LAST UPDATE : 05.06.2024
+NOTE        : None,
+
+No part of this file may be changed without agreement of
+Computer Graphics Support Group of 30 Phys-Math Lyceum
+-->
+
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>IP5 forever</title>
+    <meta name="google" content="notranslate">    
+    <meta charset="utf-8">  
+    <link rel="shortcust icon" href="icon.bmp" type="image/bmp" />
+    <!-- <script type="text/javascript" src="script.js"></script> -->
+    <style>
+    @import url(default.css);
+    </style>
+  </head>
+  <body style="margin: 0; padding: 0;" >
+    <!--   
+    <div class="rectangle-1"></div>  
+    <div class="rectangle-2"></div>  
+    <div class="rectangle-3"></div>  
+    -->
+    <canvas id="myCan" style="margin: 0;" width="700px" height="700px"></canvas>
+
+    <script type="module">
+      import * as ipgl from "./script.js";
+
+      window.addEventListener("load", () => {
+        ipgl.initGL();
+        const draw = () => {
+          // drawing
+          ipgl.Render();
+
+          // animation register
+          window.requestAnimationFrame(draw);
+        }
+        draw();
+      });
+
+      window.addEventListener("mousemove", (event) =>{
+        ipgl.onClick(event);
+      })
+
+      window.addEventListener("keydown", (event) => {
+        ipgl.onKeys(event);
+      })
+
+    </script>
+  </body>
+</html>
