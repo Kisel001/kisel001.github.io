@@ -311,19 +311,20 @@ export function Render() {
 
 // Handing of mouse function
 export function onClick(event) {
-  xClick = event.clientX;
-  yClick = event.clientY;
+  const element = document.getElementById("myCan");
+  xClick = event.clientX - element.clientLeft;
+  yClick = event.clientY - element.clientTop;
 } // End of 'onClick' function
 
 let Zoom = 2, // zoom coef variable
-  radius = 100; // radius variable
+  radius = 10000; // radius variable
 
 // Handling of keyboard function
 export function onKeys(event) {
   if (event.key == "ArrowDown") ++Zoom;
   else if (event.key == "ArrowUp" && Zoom > 1) --Zoom;
-  else if (event.key == "ArrowLeft" && radius > 10) radius -= 10;
-  else if (event.key == "ArrowRight" && radius < 300) radius += 10;
+  //else if (event.key == "ArrowLeft" && radius > 10) radius -= 10;
+  //else if (event.key == "ArrowRight" && radius < 300) radius += 10;
 } // End of 'onKeys' function
 
 // END OF 'script.js' FILE
