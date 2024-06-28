@@ -1630,8 +1630,8 @@
             "line-width": 8,
           },
         });
-      });
-    } */
+      }); */
+    } 
 
     function getRoute() {
       const st1 = prompt("Enter departure station");
