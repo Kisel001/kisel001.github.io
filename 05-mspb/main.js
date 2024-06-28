@@ -1629,8 +1629,8 @@
             ],
             "line-width": 8,
           },
-        });
-      }); */
+        }); */
+      }); 
     } 
 
     function getRoute() {
