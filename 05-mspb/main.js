@@ -1604,7 +1604,7 @@
             "line-width": 8,
           },
         });
-
+  /*
         // LINE 8
         map.addLayer({
           id: "line8",
@@ -1631,7 +1631,7 @@
           },
         });
       });
-    }
+    } */
 
     function getRoute() {
       const st1 = prompt("Enter departure station");
