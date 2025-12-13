@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>WinParody</title>
+    <style>
+      :root {
+        --bg: #0078d7;
+        --task: #222;
+        --win: #fff;
+        --accent: #0a84ff;
+        --taskbar-height: 42px;
+      }
+      html,
+      body {
+        height: 100%;
+        margin: 0;
+        font-family: Segoe UI, Tahoma, sans-serif;
+        background: linear-gradient(180deg, var(--bg), #005ea6);
+      }
+      #desktop {
+        position: relative;
+        height: 100%;
+        padding: 20px;
+        box-sizing: border-box;
+        overflow: hidden;
+      }
+      .icon {
+        width: 72px;
+        text-align: center;
+        color: #fff;
+        margin: 8px;
+        display: inline-block;
+        cursor: pointer;
+        user-select: none;
+        position: relative;
+      }
+      .icon svg {
+        width: 48px;
+        height: 48px;
+        display: block;
+        margin: 0 auto 6px;
+        filter: drop-shadow(0 1px 0 rgba(0, 0, 0, 0.3));
+      }
+      /* Taskbar */
+      #taskbar {
+        position: absolute;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 42px;
+        background: var(--task);
+        display: flex;
+        align-items: center;
+        padding: 0 8px;
+        box-sizing: border-box;
+        color: #fff;
+        z-index: 10000;
+      }
+      #startBtn {
+        background: transparent;
+        border: none;
+        color: inherit;
+        padding: 6px 10px;
+        margin-right: 8px;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+      #pinnedArea {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+      }
+      #taskButtons {
+        display: flex;
+        gap: 6px;
+        align-items: center;
+        margin-left: 8px;
+      }
+      #tray {
+        margin-left: auto;
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        padding-right: 8px;
+      }
+      #clock {
+        min-width: 70px;
+        text-align: right;
+      }
+      /* Start menu */
+      #startMenu {
+        position: absolute;
+        left: 8px;
+        bottom: 50px;
+        width: 220px;
+        background: #fff;
+        color: #000;
+        border-radius: 6px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        display: none;
+        padding: 8px;
+      }
+      #startMenu button {
+        display: block;
+        width: 100%;
+        text-align: left;
+        padding: 8px;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        border-radius: 4px;
+      }
+      /* Windows */
+      .window {
+        position: absolute;
+        width: 420px;
+        height: 300px;
+        background: var(--win);
+        border-radius: 6px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        position: absolute;
+      }
+      .window .resizer {
+        position: absolute;
+        z-index: 10001;
+        user-select: none;
+        -webkit-user-select: none;
+        touch-action: none;
+        background: transparent;
+      }
+
+      .window .resizer.edge {
+      }
+
+      .window .resizer.n {
+        top: -4px;
+        left: 8px;
+        right: 8px;
+        height: 8px;
+        cursor: ns-resize;
+      }
+      .window .resizer.s {
+        bottom: -4px;
+        left: 8px;
+        right: 8px;
+        height: 8px;
+        cursor: ns-resize;
+      }
+      .window .resizer.e {
+        top: 8px;
+        bottom: 8px;
+        right: -4px;
+        width: 8px;
+        cursor: ew-resize;
+      }
+      .window .resizer.w {
+        top: 8px;
+        bottom: 8px;
+        left: -4px;
+        width: 8px;
+        cursor: ew-resize;
+      }
+
+      .window .resizer.nw {
+        top: -4px;
+        left: -4px;
+        width: 8px;
+        height: 8px;
+        cursor: nwse-resize;
+      }
+      .window .resizer.ne {
+        top: -4px;
+        right: -4px;
+        width: 8px;
+        height: 8px;
+        cursor: nesw-resize;
+      }
+      .window .resizer.sw {
+        bottom: -4px;
+        left: -4px;
+        width: 8px;
+        height: 8px;
+        cursor: nesw-resize;
+      }
+      .window .resizer.se {
+        bottom: -4px;
+        right: -4px;
+        width: 8px;
+        height: 8px;
+        cursor: nwse-resize;
+      }
+
+      .titlebar {
+        background: linear-gradient(180deg, #f3f3f3, #e9e9e9);
+        padding: 6px 8px;
+        cursor: move;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+      }
+      .titlebar .controls button {
+        margin-left: 6px;
+        cursor: pointer;
+      }
+      .content {
+        flex: 1;
+        padding: 10px;
+        overflow: auto;
+      }
+      .hidden {
+        display: none;
+      }
+      .dialog {
+        width: 320px;
+        padding: 12px;
+        background: #fff;
+        border-radius: 6px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+      }
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(6, 40px);
+        gap: 6px;
+      }
+      .cell {
+        width: 40px;
+        height: 40px;
+        background: #ddd;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        font-weight: 700;
+      }
+      .frag {
+        width: 80px;
+        height: 80px;
+        background-size: cover;
+        border: 1px solid #ccc;
+        cursor: grab;
+      }
+      #bsod {
+        position: fixed;
+        inset: 0;
+        background: #0100a0;
+        color: #fff;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        font-family: monospace;
+        font-size: 18px;
+        padding: 20px;
+        box-sizing: border-box;
+        z-index: 10005;
+      }
+      .small {
+        font-size: 12px;
+        color: #666;
+      }
+      hr {
+        border: none;
+        border-top: 1px solid #eee;
+        margin: 8px 0;
+      }
+      /* maximize styles */
+      .window.maximized {
+        position: fixed !important;
+        inset: 0 0 var(--taskbar-height, 42px) 0 !important;
+        width: auto !important;
+        height: auto !important;
+        box-sizing: border-box !important;
+        border-radius: 0 !important;
+        margin: 0;
+        z-index: 9998;
+        box-shadow: none !important;
+      }
+
+      .titlebar .title {
+        font-weight: 600;
+      }
+      /* explorer */
+      .explorer-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+      }
+      .explorer-list li {
+        padding: 6px 8px;
+        border-radius: 4px;
+        cursor: pointer;
+      }
+      .explorer-list li:hover {
+        background: #f0f0f0;
+      }
+      /* context menu */
+      .ctxmenu {
+        position: fixed;
+        background: #fff;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        padding: 6px;
+        z-index: 99999;
+      }
+      .ctxmenu button {
+        display: block;
+        background: transparent;
+        border: none;
+        padding: 6px 10px;
+        width: 100%;
+        text-align: left;
+        cursor: pointer;
+      }
+      /* small pin indicator on icon */
+      .pin-ind {
+        position: absolute;
+        right: 2px;
+        top: 2px;
+        background: rgba(0, 0, 0, 0.5);
+        color: #fff;
+        border-radius: 3px;
+        padding: 2px 4px;
+        font-size: 10px;
+        display: none;
+      }
+      .icon.pinned .pin-ind {
+        display: block;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="desktop">
+      <!-- Icons -->
+      <div id="icons">
+        <div class="icon" data-app="mines" title="Mines (двойной клик)">
+          <div class="pin-ind">📌</div>
+          <svg
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <rect x="2" y="2" width="20" height="20" rx="4" fill="#ff6b6b" />
+            <text x="12" y="15" font-size="12" text-anchor="middle" fill="#fff">
+              💣
+            </text>
+          </svg>
+          <div>Mines</div>
+        </div>
+
+        <div class="icon" data-app="defrag" title="Defrag (двойной клик)">
+          <div class="pin-ind">📌</div>
+          <svg
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <rect x="2" y="2" width="20" height="20" rx="4" fill="#ffd166" />
+            <text x="12" y="15" font-size="12" text-anchor="middle" fill="#222">
+              🧩
+            </text>
+          </svg>
+          <div>Defrag</div>
+        </div>
+
+        <div class="icon" data-app="notepad" title="Notepad (двойной клик)">
+          <div class="pin-ind">📌</div>
+          <svg
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <rect x="2" y="2" width="20" height="20" rx="4" fill="#0a84ff" />
+            <text x="12" y="15" font-size="12" text-anchor="middle" fill="#fff">
+              ✎
+            </text>
+          </svg>
+          <div>Notepad</div>
+        </div>
+
+        <div class="icon" data-app="explorer" title="Explorer (двойной клик)">
+          <div class="pin-ind">📌</div>
+          <svg
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <rect x="2" y="2" width="20" height="20" rx="4" fill="#7bd389" />
+            <text x="12" y="15" font-size="12" text-anchor="middle" fill="#fff">
+              📁
+            </text>
+          </svg>
+          <div>Explorer</div>
+        </div>
+
+        <div class="icon" data-app="about" title="About (двойной клик)">
+          <div class="pin-ind">📌</div>
+          <svg
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            aria-hidden="true"
+          >
+            <rect x="2" y="2" width="20" height="20" rx="4" fill="#9aa0ff" />
+            <text x="12" y="15" font-size="12" text-anchor="middle" fill="#fff">
+              i
+            </text>
+          </svg>
+          <div>About</div>
+        </div>
+      </div>
+
+      <!-- Start Menu -->
+      <div id="startMenu" role="menu" aria-hidden="true">
+        <button data-app="mines">Mines</button>
+        <button data-app="defrag">Defrag</button>
+        <button data-app="notepad">Notepad</button>
+        <button data-app="explorer">Explorer</button>
+        <hr />
+        <button id="shutdown">Завершение работы</button>
+      </div>
+
+      <!-- Windows container -->
+      <div id="windows"></div>
+
+      <!-- Taskbar -->
+      <div id="taskbar">
+        <button id="startBtn">Пуск</button>
+        <div id="pinnedArea" aria-hidden="false"></div>
+        <div id="taskButtons"></div>
+        <div id="tray">
+          <div id="clock" class="small"></div>
+          <div class="small">WinParody</div>
+        </div>
+      </div>
+
+      <!-- BSOD -->
+      <div id="bsod">
+        <div>
+          <div style="font-size: 28px; margin-bottom: 12px">:(</div>
+          <div>
+            Ваш компьютер столкнулся с проблемой и должен быть перезагружен.
+          </div>
+          <div class="small" style="margin-top: 12px">
+            Если вы хотите узнать больше, представьте, что это шутка —
+            перезагрузите страницу.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      //
+      // Utilities
+      //
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      const windowsEl = document.getElementById("windows");
+      const startBtn = document.getElementById("startBtn");
+      const startMenu = document.getElementById("startMenu");
+      const taskButtons = document.getElementById("taskButtons");
+      const pinnedArea = document.getElementById("pinnedArea");
+      const bsod = document.getElementById("bsod");
+      const clockEl = document.getElementById("clock");
+
+      let zIndex = 10;
+      const PINNED_KEY = "winparody_pinned";
+      const FILES_KEY = "winparody_files";
+
+      function updateTaskbarHeightVar() {
+        const tb = document.getElementById("taskbar");
+        if (!tb) return;
+        const h = tb.offsetHeight || 42;
+        document.documentElement.style.setProperty(
+          "--taskbar-height",
+          h + "px"
+        );
+      }
+
+      /* Escape HTML for safe injection */
+      function escapeHtml(str) {
+        if (!str) return "";
+        return String(str)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;");
+      }
+
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      //
+      // Pinned icons management
+      //
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      function loadPinned() {
+        try {
+          const raw = localStorage.getItem(PINNED_KEY);
+          return raw ? JSON.parse(raw) : [];
+        } catch (e) {
+          return [];
+        }
+      }
+
+      const defaultFiles = [
+        {
+          name: "readme.txt",
+          content: "Это пример файла readme.\n\nДобро пожаловать в WinParody.",
+        },
+        {
+          name: "todo.txt",
+          content:
+            "- Благословить КТ ИТМО\n- Обосрать МКН\n - Написать WinParody",
+        },
+        {
+          name: "secret.txt",
+          content: "TOP SECURITY: blue screen is a feature.",
+        },
+      ];
+
+      function loadFiles() {
+        try {
+          const raw = localStorage.getItem(FILES_KEY);
+          if (raw == null) files = defaultFiles;
+          else files = JSON.parse(raw);
+        } catch (e) {
+          files = defaultFiles;
+        }
+      }
+
+      function saveFiles(arr) {
+        localStorage.setItem(FILES_KEY, JSON.stringify(files));
+      }
+
+      function savePinned(arr) {
+        localStorage.setItem(PINNED_KEY, JSON.stringify(arr));
+      }
+
+      function isPinned(app) {
+        return loadPinned().includes(app);
+      }
+
+      function togglePin(app) {
+        const arr = loadPinned();
+        const idx = arr.indexOf(app);
+        if (idx === -1) arr.push(app);
+        else arr.splice(idx, 1);
+        savePinned(arr);
+        renderPinned();
+        updateIconPinIndicators();
+      }
+
+      function renderPinned() {
+        pinnedArea.innerHTML = "";
+        const arr = loadPinned();
+        arr.forEach((app) => {
+          const btn = document.createElement("button");
+          btn.textContent = app;
+          btn.title = "Открыть " + app;
+          btn.style.marginLeft = "6px";
+          btn.dataset.app = app;
+          // right-click to unpin
+          btn.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            togglePin(app);
+          });
+          btn.addEventListener("click", () => openApp(app));
+          pinnedArea.appendChild(btn);
+        });
+      }
+      function updateIconPinIndicators() {
+        document.querySelectorAll(".icon").forEach((ic) => {
+          const app = ic.dataset.app;
+          if (isPinned(app)) ic.classList.add("pinned");
+          else ic.classList.remove("pinned");
+        });
+      }
+
+      /* Context menu for icons (pin/unpin) */
+      let ctxMenuEl = null;
+      function showIconContextMenu(app, x, y) {
+        if (ctxMenuEl) ctxMenuEl.remove();
+        ctxMenuEl = document.createElement("div");
+        ctxMenuEl.className = "ctxmenu";
+        const pinBtn = document.createElement("button");
+        pinBtn.textContent = isPinned(app)
+          ? "Открепить от панели задач"
+          : "Закрепить на панели задач";
+        pinBtn.onclick = () => {
+          togglePin(app);
+          ctxMenuEl.remove();
+          ctxMenuEl = null;
+        };
+        ctxMenuEl.appendChild(pinBtn);
+        document.body.appendChild(ctxMenuEl);
+        ctxMenuEl.style.left = x + "px";
+        ctxMenuEl.style.top = y + "px";
+        document.addEventListener(
+          "click",
+          () => {
+            if (ctxMenuEl) {
+              ctxMenuEl.remove();
+              ctxMenuEl = null;
+            }
+          },
+          { once: true }
+        );
+      }
+
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      //
+      // Window system
+      //
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      function createWindow(title, contentHtml, opts = {}) {
+        const win = document.createElement("div");
+        win.className = "window";
+        win.style.left = 50 + Math.random() * 200 + "px";
+        win.style.top = 50 + Math.random() * 120 + "px";
+        win.style.zIndex = ++zIndex;
+        win.innerHTML = `
+        <div class="titlebar">
+          <div class="title">${escapeHtml(title)}</div>
+          <div class="controls">
+            <button class="min" title="Minimize">_</button>
+            <button class="max" title="Maximize">▢</button>
+            <button class="close" title="Close">X</button>
+          </div>
+        </div>
+        <div class="content">${contentHtml}</div>
+      `;
+        windowsEl.appendChild(win);
+
+        // task button
+        const tbtn = document.createElement("button");
+        tbtn.textContent = title;
+        tbtn.style.marginLeft = "6px";
+        taskButtons.appendChild(tbtn);
+
+        // drag
+        const titlebar = win.querySelector(".titlebar");
+        titlebar.addEventListener("mousedown", (e) => {
+          if (e.target.closest(".controls")) return;
+          win.style.zIndex = ++zIndex;
+          const startX = e.clientX,
+            startY = e.clientY;
+          const rect = win.getBoundingClientRect();
+          function move(ev) {
+            win.style.left = rect.left + (ev.clientX - startX) + "px";
+            win.style.top = rect.top + (ev.clientY - startY) + "px";
+          }
+          function up() {
+            window.removeEventListener("mousemove", move);
+            window.removeEventListener("mouseup", up);
+          }
+          window.addEventListener("mousemove", move);
+          window.addEventListener("mouseup", up);
+          updateTaskbarHeightVar();
+          window.addEventListener("resize", updateTaskbarHeightVar);
+        });
+
+        // controls
+        const btnClose = win.querySelector(".close");
+        const btnMin = win.querySelector(".min");
+        const btnMax = win.querySelector(".max");
+
+        win.closeApp = () => {
+          win.remove();
+          tbtn.remove();
+        };
+
+        const resizerDirs = ["n", "s", "e", "w", "nw", "ne", "sw", "se"];
+        resizerDirs.forEach((dir) => {
+          const r = document.createElement("div");
+          r.className = "resizer " + dir;
+          r.dataset.dir = dir;
+          r.addEventListener("mousedown", onResizerMouseDown);
+          win.appendChild(r);
+        });
+
+        let isResizing = false;
+        let resizeStart = null;
+        const minW = 200;
+        const minH = 120;
+
+        function onResizerMouseDown(e) {
+          e.stopPropagation();
+          e.preventDefault();
+
+          // если окно сейчас максимизировано — не даём ресайз
+          if (win.classList.contains("maximized")) return;
+
+          isResizing = true;
+          win.style.transition = "none";
+
+          const dir = e.currentTarget.dataset.dir;
+          const rect = win.getBoundingClientRect();
+          resizeStart = {
+            dir,
+            startX: e.clientX,
+            startY: e.clientY,
+            startLeft: rect.left + window.scrollX,
+            startTop: rect.top + window.scrollY,
+            startWidth: rect.width,
+            startHeight: rect.height,
+          };
+
+          win.style.zIndex = ++zIndex;
+
+          document.addEventListener("mousemove", onResizerMouseMove);
+          document.addEventListener("mouseup", onResizerMouseUp);
+        }
+
+        function onResizerMouseMove(e) {
+          if (!isResizing || !resizeStart) return;
+          e.preventDefault();
+
+          const dx = e.clientX - resizeStart.startX;
+          const dy = e.clientY - resizeStart.startY;
+          let newLeft = resizeStart.startLeft;
+          let newTop = resizeStart.startTop;
+          let newWidth = resizeStart.startWidth;
+          let newHeight = resizeStart.startHeight;
+          const dir = resizeStart.dir;
+
+          if (dir.includes("e")) {
+            newWidth = Math.max(minW, resizeStart.startWidth + dx);
+          }
+          if (dir.includes("s")) {
+            newHeight = Math.max(minH, resizeStart.startHeight + dy);
+          }
+          if (dir.includes("w")) {
+            newWidth = Math.max(minW, resizeStart.startWidth - dx);
+            if (resizeStart.startWidth - dx >= minW) {
+              newLeft = resizeStart.startLeft + dx;
+            } else {
+              newLeft = resizeStart.startLeft + (resizeStart.startWidth - minW);
+            }
+          }
+          if (dir.includes("n")) {
+            newHeight = Math.max(minH, resizeStart.startHeight - dy);
+            if (resizeStart.startHeight - dy >= minH) {
+              newTop = resizeStart.startTop + dy;
+            } else {
+              newTop = resizeStart.startTop + (resizeStart.startHeight - minH);
+            }
+          }
+
+          win.style.left = Math.round(newLeft) + "px";
+          win.style.top = Math.round(newTop) + "px";
+          win.style.width = Math.round(newWidth) + "px";
+          win.style.height = Math.round(newHeight) + "px";
+        }
+
+        function onResizerMouseUp(e) {
+          if (!isResizing) return;
+          isResizing = false;
+          resizeStart = null;
+          win.style.transition = "";
+          win.dataset.prevLeft = win.style.left;
+          win.dataset.prevTop = win.style.top;
+          win.dataset.prevWidth = win.style.width;
+          win.dataset.prevHeight = win.style.height;
+
+          document.removeEventListener("mousemove", onResizerMouseMove);
+          document.removeEventListener("mouseup", onResizerMouseUp);
+        }
+
+        btnClose.onclick = win.closeApp;
+
+        btnMin.onclick = () => {
+          win.style.display = "none";
+          tbtn.classList.add("minimized");
+        };
+
+        btnMax.onclick = () => {
+          if (!win.classList.contains("maximized")) {
+            win.dataset.prevLeft = win.style.left;
+            win.dataset.prevTop = win.style.top;
+            win.dataset.prevWidth = win.style.width;
+            win.dataset.prevHeight = win.style.height;
+
+            win.classList.add("maximized");
+            btnMax.textContent = "❐";
+
+            win.style.left = "";
+            win.style.top = "";
+            win.style.width = "";
+            win.style.height = "";
+          } else {
+            win.classList.remove("maximized");
+            win.style.left = win.dataset.prevLeft || "50px";
+            win.style.top = win.dataset.prevTop || "50px";
+            win.style.width = win.dataset.prevWidth || "420px";
+            win.style.height = win.dataset.prevHeight || "300px";
+            btnMax.textContent = "▢";
+          }
+          win.style.zIndex = ++zIndex;
+        };
+
+        tbtn.onclick = () => {
+          if (win.style.display === "none") {
+            win.style.display = "flex";
+            tbtn.classList.remove("minimized");
+            win.style.zIndex = ++zIndex;
+          } else {
+            win.style.zIndex = ++zIndex;
+          }
+        };
+
+        titlebar.addEventListener("dblclick", () => btnMax.click());
+
+        return win;
+      }
+
+      /* Close all windows (used by BSOD) */
+      function closeAllWindows() {
+        document.querySelectorAll(".window").forEach((w) => w.closeApp());
+        //taskButtons.innerHTML = "";
+      }
+
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      //
+      // Apps and behavior
+      //
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      var files = [];
+
+      function openApp(name, payload) {
+        if (name === "about") {
+          createWindow(
+            "About WinParody",
+            `<div>WinParody<br/>Версия 1.0<br/>(C) Kisel Studios. Все права защищены<br/><br/><br/><button id="easter">Нажми меня</button></div>`
+          );
+          setTimeout(() => {
+            const b = document.getElementById("easter");
+            if (b) b.onclick = () => alert("CT ITMO FOREVER");
+          }, 50);
+        } else if (name === "notepad") {
+          const text = payload && payload.text ? payload.text : "";
+          const filename = payload && payload.name ? payload.name : "";
+          const win = createWindow(
+            "Notepad",
+            `<div style="display:flex;flex-direction:column;height:100%"><div style="margin-bottom:8px;"><button id="saveNote">Сохранить</button> <span class="small">${escapeHtml(
+              filename
+            )}</span></div><textarea id="note" style="width:100%;height:100%;box-sizing:border-box;">${escapeHtml(
+              text
+            )}</textarea><div class="small" style="margin-top:6px;">Подсказка: попробуй написать "blue screen"</div></div>`
+          );
+          // save handler scoped to this window
+          setTimeout(() => {
+            const ta = win.querySelector("#note");
+            const saveBtn = win.querySelector("#saveNote");
+            if (saveBtn && ta) {
+              saveBtn.onclick = () => {
+                const content = ta.value;
+                const nameToSave = prompt("Имя файла:", filename || "note.txt");
+
+                if (!nameToSave) return;
+
+                const existingFile = files.find((f) => f.name === nameToSave);
+
+                if (existingFile) {
+                  existingFile.content = content;
+                  alert(`Файл "${nameToSave}" обновлен!`);
+                } else {
+                  files.push({ name: nameToSave, content: content });
+                  alert(`Файл "${nameToSave}" создан!`);
+                }
+
+                refreshAllExplorers();
+
+                const label = win.querySelector("div > span.small");
+                if (label) label.textContent = nameToSave;
+              };
+              ta.addEventListener("input", () => {
+                if (ta.value.toLowerCase().includes("blue screen"))
+                  triggerBSOD();
+              });
+            }
+          }, 50);
+        } else if (name === "mines") {
+          createWindow("Mines", minesHtml());
+        } else if (name === "defrag") {
+          createWindow("Defrag", defragHtml());
+        } else if (name === "explorer") {
+          createWindow("Explorer", explorerHtml());
+        }
+      }
+
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      //
+      // Mines and Defrag (scoped)
+      //
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      function minesHtml() {
+        return `<div>
+        <div class="grid" id="minesGrid"></div>
+        <div style="margin-top:10px;"><button id="resetM">Reset</button> <span id="minesMsg" class="small"></span></div>
+      </div>`;
+      }
+      function initMinesScoped(container) {
+        const grid = container.querySelector("#minesGrid");
+        const msg = container.querySelector("#minesMsg");
+        const size = 6,
+          mines = 6;
+        let board = Array(size * size).fill(0);
+        let placed = 0;
+        while (placed < mines) {
+          const i = Math.floor(Math.random() * board.length);
+          if (board[i] !== 9) {
+            board[i] = 9;
+            placed++;
+          }
+        }
+        for (let r = 0; r < size; r++)
+          for (let c = 0; c < size; c++) {
+            const i = r * size + c;
+            if (board[i] === 9) continue;
+            let cnt = 0;
+            for (let dr = -1; dr <= 1; dr++)
+              for (let dc = -1; dc <= 1; dc++) {
+                const rr = r + dr,
+                  cc = c + dc;
+                if (rr < 0 || cc < 0 || rr >= size || cc >= size) continue;
+                if (board[rr * size + cc] === 9) cnt++;
+              }
+            board[i] = cnt;
+          }
+        grid.innerHTML = "";
+        board.forEach((v, idx) => {
+          const cell = document.createElement("div");
+          cell.className = "cell";
+          cell.dataset.idx = idx;
+          cell.addEventListener("click", () => {
+            if (cell.classList.contains("revealed")) return;
+            cell.classList.add("revealed");
+            if (v === 9) {
+              cell.style.background = "red";
+              cell.textContent = "💣";
+              if (msg) msg.textContent = "Boom!";
+              setTimeout(() => triggerBSOD(), 600);
+            } else {
+              cell.style.background = "#eee";
+              cell.textContent = v ? v : "";
+            }
+          });
+          grid.appendChild(cell);
+        });
+        const resetBtn = container.querySelector("#resetM");
+        if (resetBtn) resetBtn.onclick = () => initMinesScoped(container);
+      }
+
+      function defragHtml() {
+        return `<div>
+        <div style="display:flex;gap:10px;">
+          <div id="puzzle" style="width:260px;height:260px;display:flex;flex-wrap:wrap"></div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <button id="shuffle">Shuffle</button>
+            <button id="auto">Auto defrag</button>
+            <div class="small">Соберите картинку</div>
+          </div>
+        </div>
+      </div>`;
+      }
+      function initDefragScoped(win) {
+        const puzzle = win.querySelector("#puzzle");
+        if (!puzzle) return;
+        const size = 3;
+        const pieces = [];
+        for (let i = 0; i < size * size; i++) {
+          const el = document.createElement("div");
+          el.className = "frag";
+          el.style.width = "80px";
+          el.style.height = "80px";
+          const hue = Math.floor((360 / (size * size)) * i);
+          el.style.background = `linear-gradient(135deg,hsl(${hue} 70% 60%), hsl(${
+            (hue + 40) % 360
+          } 70% 50%))`;
+          el.draggable = true;
+          el.dataset.idx = i;
+          pieces.push(el);
+        }
+        let arr = pieces.slice();
+        function render() {
+          puzzle.innerHTML = "";
+          arr.forEach((p) => p && puzzle.appendChild(p));
+        }
+        render();
+        let dragIdx = null;
+        puzzle.addEventListener("dragstart", (e) => {
+          if (e.target.classList.contains("frag"))
+            dragIdx = e.target.dataset.idx;
+        });
+        puzzle.addEventListener("dragover", (e) => e.preventDefault());
+        puzzle.addEventListener("drop", (e) => {
+          const target = e.target.closest(".frag");
+          if (!target) return;
+          const tIdx = target.dataset.idx;
+          const i1 = arr.findIndex((x) => x.dataset.idx == dragIdx);
+          const i2 = arr.findIndex((x) => x.dataset.idx == tIdx);
+          [arr[i1], arr[i2]] = [arr[i2], arr[i1]];
+          render();
+          if (arr.every((p, i) => p.dataset.idx == i))
+            alert("Defrag complete!");
+        });
+        const shuffle = win.querySelector("#shuffle");
+        const auto = win.querySelector("#auto");
+        if (shuffle)
+          shuffle.onclick = () => {
+            arr = arr.sort(() => Math.random() - 0.5);
+            render();
+          };
+        if (auto)
+          auto.onclick = () => {
+            arr = pieces.slice();
+            render();
+          };
+      }
+
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      //
+      // Explorer
+      //
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      function explorerHtml() {
+        let listHtml = '<ul class="explorer-list">';
+        files.forEach(
+          (f, idx) =>
+            (listHtml += `<li data-idx="${idx}">${escapeHtml(f.name)}</li>`)
+        );
+        listHtml +=
+          '</ul><div style="margin-top:8px;"><button id="newFile">New file</button></div>';
+        return `<div><div class="small">Файловая система (демо)</div>${listHtml}</div>`;
+      }
+      function initExplorerScoped(win) {
+        const list = win.querySelectorAll(".explorer-list li");
+        list.forEach((li) => {
+          li.addEventListener("click", () => {
+            const idx = Number(li.dataset.idx);
+            const file = files[idx];
+            if (file) {
+              openApp("notepad", { text: file.content, name: file.name });
+            }
+          });
+        });
+        const newBtn = win.querySelector("#newFile");
+        if (newBtn)
+          newBtn.onclick = () => {
+            const name = prompt("Имя нового файла", "new.txt");
+            if (!name) return;
+            const content = prompt("Содержимое файла", "");
+            files.push({ name, content: content || "" });
+            refreshAllExplorers();
+            loadPinned;
+            //win.closeApp();
+            //openApp("explorer");
+          };
+      }
+
+      function refreshAllExplorers() {
+        const lists = document.querySelectorAll(".explorer-list");
+
+        lists.forEach((ul) => {
+          ul.innerHTML = "";
+
+          files.forEach((f, idx) => {
+            const li = document.createElement("li");
+            li.dataset.idx = idx;
+            li.textContent = f.name;
+
+            li.addEventListener("click", () => {
+              openApp("notepad", { text: f.content, name: f.name });
+            });
+
+            ul.appendChild(li);
+          });
+        });
+
+        saveFiles();
+      }
+
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      //
+      // BSOD behavior
+      //
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      function triggerBSOD() {
+        // close all windows first
+        closeAllWindows();
+        // show BSOD
+        bsod.style.display = "flex";
+        setTimeout(() => {
+          bsod.style.display = "none";
+        }, 4000);
+      }
+
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      //
+      // Observers and initialization
+      //
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      const obs = new MutationObserver(() => {
+        document.querySelectorAll(".window").forEach((w) => {
+          if (w.dataset.defragInit !== "1" && w.querySelector("#puzzle")) {
+            w.dataset.defragInit = "1";
+            initDefragScoped(w);
+          }
+          if (w.dataset.minesInit !== "1" && w.querySelector("#minesGrid")) {
+            w.dataset.minesInit = "1";
+            initMinesScoped(w);
+          }
+          if (
+            w.dataset.explorerInit !== "1" &&
+            w.querySelector(".explorer-list")
+          ) {
+            w.dataset.explorerInit = "1";
+            initExplorerScoped(w);
+          }
+        });
+      });
+      obs.observe(windowsEl, { childList: true, subtree: true });
+
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      //
+      // UI wiring
+      //
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      /* Start menu toggle */
+      startBtn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        startMenu.style.display =
+          startMenu.style.display === "block" ? "none" : "block";
+        startMenu.setAttribute(
+          "aria-hidden",
+          startMenu.style.display !== "block"
+        );
+      });
+      document.addEventListener("click", (e) => {
+        if (!startMenu.contains(e.target) && e.target !== startBtn)
+          startMenu.style.display = "none";
+      });
+
+      /* Icons: dblclick opens, contextmenu toggles pin */
+      document.querySelectorAll(".icon").forEach((ic) => {
+        ic.addEventListener("dblclick", (e) => {
+          const app = ic.dataset.app;
+          if (app) openApp(app);
+        });
+        ic.addEventListener("contextmenu", (e) => {
+          e.preventDefault();
+          const app = ic.dataset.app;
+          showIconContextMenu(app, e.clientX, e.clientY);
+        });
+      });
+
+      /* Start menu buttons */
+      startMenu.querySelectorAll("button[data-app]").forEach((b) => {
+        b.addEventListener("click", (e) => {
+          const app = b.dataset.app;
+          if (app) openApp(app);
+          startMenu.style.display = "none";
+        });
+      });
+
+      /* Shutdown */
+      document.getElementById("shutdown").addEventListener("click", () => {
+        window.location.href = "https://kisel001.github.io/";
+        //window.close();
+      });
+
+      /* Keyboard shortcut Ctrl+Alt+Del -> BSOD */
+      document.addEventListener("keydown", (e) => {
+        if (e.ctrlKey && e.altKey) triggerBSOD();
+      });
+
+      /* Close context menu on scroll or resize */
+      window.addEventListener("resize", () => {
+        if (ctxMenuEl) {
+          ctxMenuEl.remove();
+          ctxMenuEl = null;
+        }
+      });
+
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      //
+      // Clock
+      //
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      function updateClock() {
+        const d = new Date();
+        const hh = String(d.getHours()).padStart(2, "0");
+        const mm = String(d.getMinutes()).padStart(2, "0");
+        clockEl.textContent = hh + ":" + mm;
+      }
+      updateClock();
+      setInterval(updateClock, 1000);
+
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      //
+      // Startup: render pinned and welcome
+      //
+      //-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
+      loadFiles();
+      renderPinned();
+      updateIconPinIndicators();
+      createWindow(
+        "Welcome",
+        "<div>Добро пожаловать в WinParody! Двойной клик по иконкам открывает приложения. Правый клик по иконке — закрепить/открепить.</div>"
+      );
+    </script>
+  </body>
+</html>
