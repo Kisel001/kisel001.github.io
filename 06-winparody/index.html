@@ -66,6 +66,7 @@
         margin-right: 8px;
         cursor: pointer;
         border-radius: 4px;
+        z-index: 10000;
       }
       #pinnedArea {
         display: flex;
@@ -101,6 +102,7 @@
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
         display: none;
         padding: 8px;
+        z-index: 10000;
       }
       #startMenu button {
         display: block;
@@ -471,6 +473,7 @@
       const pinnedArea = document.getElementById("pinnedArea");
       const bsod = document.getElementById("bsod");
       const clockEl = document.getElementById("clock");
+      const version = "1.1.1";
 
       let zIndex = 10;
       const PINNED_KEY = "winparody_pinned";
@@ -837,7 +840,9 @@
         if (name === "about") {
           createWindow(
             "About WinParody",
-            `<div>WinParody<br/>Версия 1.1<br/>(C) Kisel Studios. Все права защищены<br/><br/><br/><button id="easter">Нажми меня</button></div>`
+            `<div>WinParody<br/>Версия ` +
+              version +
+              `<br/>(C) Kisel Studios. Все права защищены<br/><br/><br/><button id="easter">Нажми меня</button></div>`
           );
           setTimeout(() => {
             const b = document.getElementById("easter");
@@ -850,7 +855,7 @@
             "Notepad",
             `<div style="display:flex;flex-direction:column;height:100%"><div style="margin-bottom:8px;"><button id="saveNote">Сохранить</button> <span class="small">${escapeHtml(
               filename
-            )}</span></div><textarea id="note" style="width:100%;height:100%;box-sizing:border-box;">${escapeHtml(
+            )}</span></div><textarea id="note" style="width:100%;height:100%;box-sizing:border-box;resize:none">${escapeHtml(
               text
             )}</textarea><div class="small" style="margin-top:6px;">Подсказка: попробуй написать "blue screen"</div></div>`
           );
@@ -1038,7 +1043,7 @@
         );
         listHtml +=
           '</ul><div style="margin-top:8px;"><button id="newFile">New file</button></div>';
-        return `<div><div class="small">Файловая система (демо)</div>${listHtml}</div>`;
+        return `<div><div class="small">Файловая система</div>${listHtml}</div>`;
       }
       function initExplorerScoped(win) {
         const list = win.querySelectorAll(".explorer-list li");
@@ -1056,8 +1061,8 @@
           newBtn.onclick = () => {
             const name = prompt("Имя нового файла", "new.txt");
             if (!name) return;
-            const content = prompt("Содержимое файла", "");
-            files.push({ name, content: content || "" });
+            //const content = prompt("Содержимое файла", "");
+            files.push({ name, content: "" });
             refreshAllExplorers();
             loadPinned;
             //win.closeApp();
