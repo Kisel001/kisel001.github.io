@@ -473,7 +473,7 @@
       const pinnedArea = document.getElementById("pinnedArea");
       const bsod = document.getElementById("bsod");
       const clockEl = document.getElementById("clock");
-      const version = "1.1.1";
+      const version = "1.1.2";
 
       let zIndex = 10;
       const PINNED_KEY = "winparody_pinned";
@@ -914,51 +914,107 @@
       function initMinesScoped(container) {
         const grid = container.querySelector("#minesGrid");
         const msg = container.querySelector("#minesMsg");
-        const size = 6,
-          mines = 6;
+        const size = 6;
+        const mines = 6;
+
         let board = Array(size * size).fill(0);
         let placed = 0;
+
+        // Генерация мин
         while (placed < mines) {
           const i = Math.floor(Math.random() * board.length);
           if (board[i] !== 9) {
-            board[i] = 9;
+            board[i] = 9; // 9 обозначает мину
             placed++;
           }
         }
-        for (let r = 0; r < size; r++)
+
+        // Подсчет цифр вокруг мин
+        for (let r = 0; r < size; r++) {
           for (let c = 0; c < size; c++) {
             const i = r * size + c;
             if (board[i] === 9) continue;
             let cnt = 0;
-            for (let dr = -1; dr <= 1; dr++)
+            for (let dr = -1; dr <= 1; dr++) {
               for (let dc = -1; dc <= 1; dc++) {
-                const rr = r + dr,
-                  cc = c + dc;
+                const rr = r + dr;
+                const cc = c + dc;
                 if (rr < 0 || cc < 0 || rr >= size || cc >= size) continue;
                 if (board[rr * size + cc] === 9) cnt++;
               }
+            }
             board[i] = cnt;
           }
+        }
+
+        // Отрисовка поля и логика игры
         grid.innerHTML = "";
+        let revealedCount = 0;
+        const totalSafeCells = size * size - mines;
+        let isGameOver = false;
+
         board.forEach((v, idx) => {
           const cell = document.createElement("div");
           cell.className = "cell";
           cell.dataset.idx = idx;
+
+          cell.addEventListener("contextmenu", (e) => {
+            e.preventDefault();
+            if (isGameOver || cell.classList.contains("revealed")) return;
+
+            if (cell.classList.contains("flagged")) {
+              cell.classList.remove("flagged");
+              cell.textContent = "";
+            } else {
+              cell.classList.add("flagged");
+              cell.textContent = "🚩";
+            }
+          });
+
           cell.addEventListener("click", () => {
-            if (cell.classList.contains("revealed")) return;
+            if (
+              isGameOver ||
+              cell.classList.contains("revealed") ||
+              cell.classList.contains("flagged")
+            )
+              return;
+
             cell.classList.add("revealed");
+
             if (v === 9) {
               cell.style.background = "red";
               cell.textContent = "💣";
-              if (msg) msg.textContent = "Boom!";
-              setTimeout(() => triggerBSOD(), 600);
+              if (msg) {
+                msg.textContent = "Взрыв! Вы проиграли.";
+                msg.style.color = "red";
+              }
+              isGameOver = true;
+              setTimeout(() => triggerBSOD(), 1000);
             } else {
               cell.style.background = "#eee";
-              cell.textContent = v ? v : "";
+              cell.textContent = v > 0 ? v : "";
+
+              if (v === 1) cell.style.color = "blue";
+              if (v === 2) cell.style.color = "green";
+              if (v >= 3) cell.style.color = "red";
+
+              revealedCount++;
+
+              if (revealedCount === totalSafeCells) {
+                isGameOver = true;
+                if (msg) {
+                  msg.textContent = "Победа! Все мины найдены.";
+                  msg.style.color = "green";
+                }
+                document.querySelectorAll(".cell").forEach((c, cIdx) => {
+                  if (board[cIdx] === 9) c.textContent = "💣";
+                });
+              }
             }
           });
           grid.appendChild(cell);
         });
+
         const resetBtn = container.querySelector("#resetM");
         if (resetBtn) resetBtn.onclick = () => initMinesScoped(container);
       }
