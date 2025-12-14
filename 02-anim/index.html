@@ -1,39 +1,85 @@
-<!--
-   index.html
-
-        Copyright (C) CGSG of PML30. All rights reserved.
-
-   main startup file
--->
-
 <!DOCTYPE html>
 <html lang="ru">
   <head>
     <meta charset="UTF-8" />
-    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Platonic Solids | Animation</title>
+    <meta name="google" content="notranslate" />
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link rel="shortcut icon" href="logo.png" type="image/png" />
+    
     <script src="./output/main.js"></script>
+
     <style>
-      @import url(../styles_def.css);
+      :root {
+        --bg-dark: #0f172a;
+        --accent-secondary: #818cf8;
+        --text-main: #f8fafc;
+      }
+
+      body {
+        margin: 0;
+        padding: 0;
+        font-family: 'Inter', sans-serif;
+        background-color: var(--bg-dark);
+        background-image: radial-gradient(circle at 50% 50%, rgba(129, 140, 248, 0.15) 0%, transparent 60%);
+        color: var(--text-main);
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+      }
+
+      .back-btn {
+        position: absolute;
+        top: 20px;
+        left: 20px;
+        text-decoration: none;
+        color: var(--text-main);
+        background: rgba(30, 41, 59, 0.8);
+        padding: 10px 20px;
+        border-radius: 50px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        backdrop-filter: blur(5px);
+        font-weight: 600;
+        transition: all 0.3s ease;
+        z-index: 100;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .back-btn:hover {
+        background: var(--accent-secondary);
+        color: #fff;
+        transform: translateY(-2px);
+      }
+
+      canvas {
+        box-shadow: 0 0 60px rgba(129, 140, 248, 0.2);
+        border-radius: 12px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        max-width: 95vw;
+        max-height: 90vh;
+      }
     </style>
-    <link rel="shortcust icon" href="logo.png" type="image/png" />
-    <title>Document</title>
   </head>
   <body>
-    <a href="../">
-      <button form="" class="button_kisel001" type="button">Go to menu</button
-      ><br />
+    
+    <a href="../" class="back-btn">
+      <i class="fa-solid fa-arrow-left"></i> Назад
     </a>
+
     <canvas
       id="AnimHandle"
-      style="margin: 0"
       width="700px"
       height="700px"
     ></canvas>
-    <!--
-  <input id="myInput"> 
-  <button onclick="Proj.onClickButton()">Submit</button>
-  --></body>
-</html>
 
-<!-- END OF 'index.html' FILE -->
+  </body>
+</html>

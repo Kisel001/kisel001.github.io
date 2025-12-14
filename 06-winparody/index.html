@@ -312,7 +312,7 @@
         border-radius: 6px;
         box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
         padding: 6px;
-        z-index: 99999;
+        z-index: 9999;
       }
       .ctxmenu button {
         display: block;
@@ -519,7 +519,7 @@
         {
           name: "todo.txt",
           content:
-            "- Благословить КТ ИТМО\n- Обосрать МКН\n - Написать WinParody",
+            "- Благословить КТ ИТМО\n- Обосрать МКН\n- Написать WinParody",
         },
         {
           name: "secret.txt",
@@ -975,7 +975,6 @@
           }
         }
 
-        // Отрисовка поля и логика игры
         grid.innerHTML = "";
         let revealedCount = 0;
         const totalSafeCells = size * size - mines;
@@ -1044,7 +1043,11 @@
         });
 
         const resetBtn = container.querySelector("#resetM");
-        if (resetBtn) resetBtn.onclick = () => initMinesScoped(container);
+        if (resetBtn)
+          resetBtn.onclick = () => {
+            msg.textContent = "";
+            initMinesScoped(container);
+          };
       }
 
       function defragHtml() {
@@ -1148,7 +1151,6 @@
             //const content = prompt("Содержимое файла", "");
             files.push({ name, content: "" });
             refreshAllExplorers();
-            loadPinned;
             //win.closeApp();
             //openApp("explorer");
           };

@@ -1,43 +1,361 @@
 <!DOCTYPE html>
-<html lang="ru" class="notranslate" translate="no">
-  <head>
-    <meta name="google" content="notranslate" />
-    <meta charset="utf-8" />
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Иван Пашков | Портфолио</title>
+    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
     <style>
-      @import url(styles_def.css);
-    </style>
-    <title>IP5 projects</title>
-  </head>
-  <body>
-    <h1>IP5 Projects:</h1>
+        :root {
+            --bg-dark: #0f172a;
+            --card-bg: rgba(30, 41, 59, 0.6);
+            --card-border: rgba(255, 255, 255, 0.08);
+            --accent-primary: #38bdf8; /* Голубой */
+            --accent-secondary: #818cf8; /* Индиго */
+            --accent-gold: #fbbf24; /* Для C++ */
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
 
-    <!--<button class="button_kisel001" role="button">Button 63</button>-->
-    <a href="01-fractal/">
-      <button form="" class="button_kisel001" type="button">
-        Fractal project</button
-      ><br />
-    </a>
-    <br />
-    <a href="02-anim/">
-      <button form="" class="button_kisel001" type="button">
-        Platon project</button
-      ><br />
-    </a>
-    <br />
-    <a href="https://kisel001-chat.glitch.me">
-      <button form="" class="button_kisel001" type="button">Chat</button><br />
-    </a>
-    <br />
-    <a href="05-mspb/">
-      <button form="" class="button_kisel001" type="button">
-        Навигатор по метро СПБ</button
-      ><br />
-    </a>
-    <br />
-    <a href="06-winparody/">
-      <button form="" class="button_kisel001" type="button">
-        Пародия на Windows</button
-      ><br />
-    </a>
-  </body>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: var(--bg-dark);
+            /* Сложный градиентный фон */
+            background-image: 
+                radial-gradient(circle at 0% 0%, rgba(56, 189, 248, 0.15) 0%, transparent 50%),
+                radial-gradient(circle at 100% 100%, rgba(129, 140, 248, 0.15) 0%, transparent 50%);
+            background-attachment: fixed;
+            color: var(--text-main);
+            min-height: 100vh;
+            line-height: 1.6;
+            padding-bottom: 3rem;
+        }
+
+        /* Контейнер для центрирования */
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+        }
+
+        /* --- HEADER --- */
+        header {
+            padding: 4rem 0 3rem;
+            text-align: center;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, #fff 20%, #94a3b8 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.02em;
+        }
+
+        .status {
+            display: inline-block;
+            background: rgba(56, 189, 248, 0.1);
+            color: var(--accent-primary);
+            padding: 0.25rem 1rem;
+            border-radius: 50px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            border: 1px solid rgba(56, 189, 248, 0.2);
+            margin-bottom: 1rem;
+        }
+
+        /* --- ABOUT SECTION --- */
+        .about-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 24px;
+            padding: 2.5rem;
+            backdrop-filter: blur(12px);
+            margin-bottom: 3rem;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+            animation: slideUp 0.6s ease-out forwards;
+        }
+
+        .about-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .bio-text {
+            font-size: 1.1rem;
+            color: #e2e8f0;
+        }
+
+        .bio-text strong {
+            color: var(--accent-primary);
+        }
+
+        .edu-list {
+            list-style: none;
+            margin-top: 1rem;
+            border-left: 2px solid var(--card-border);
+            padding-left: 1.5rem;
+        }
+
+        .edu-item {
+            position: relative;
+            margin-bottom: 1rem;
+            color: var(--text-muted);
+        }
+
+        .edu-item::before {
+            content: '';
+            position: absolute;
+            left: -1.85rem;
+            top: 0.6rem;
+            width: 0.6rem;
+            height: 0.6rem;
+            background: var(--accent-secondary);
+            border-radius: 50%;
+        }
+
+        /* Skills Tags */
+        .skills-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .skill-tag {
+            padding: 0.4rem 1rem;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: transform 0.2s;
+            cursor: default;
+        }
+
+        .skill-tag:hover { transform: translateY(-2px); }
+
+        .tag-main {
+            background: rgba(251, 191, 36, 0.15);
+            color: var(--accent-gold);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            box-shadow: 0 0 10px rgba(251, 191, 36, 0.1);
+        }
+
+        .tag-secondary {
+            background: rgba(255, 255, 255, 0.05);
+            color: var(--text-muted);
+            border: 1px solid var(--card-border);
+        }
+        
+        .tag-secondary:hover {
+            border-color: var(--accent-primary);
+            color: var(--text-main);
+        }
+
+        /* --- PROJECTS GRID --- */
+        .section-title {
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-left: 0.5rem;
+            border-left: 4px solid var(--accent-primary);
+            line-height: 1;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .project-card {
+            background: var(--card-bg);
+            border: 1px solid var(--card-border);
+            border-radius: 16px;
+            padding: 1.5rem;
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .project-card:hover {
+            transform: translateY(-5px);
+            background: rgba(30, 41, 59, 0.9);
+            border-color: var(--accent-primary);
+            box-shadow: 0 10px 40px -10px rgba(56, 189, 248, 0.3);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .folder-icon {
+            font-size: 2rem;
+            color: var(--accent-primary);
+        }
+
+        .project-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-main);
+        }
+
+        .project-desc {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            flex-grow: 1;
+        }
+
+        .card-footer {
+            display: flex;
+            align-items: center;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--accent-primary);
+        }
+        
+        .card-footer i { margin-left: auto; }
+
+        /* Badges */
+        .badge {
+            font-size: 0.7rem;
+            padding: 0.2rem 0.6rem;
+            border-radius: 6px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+        .badge-gl { background: rgba(168, 85, 247, 0.2); color: #d8b4fe; }
+        .badge-map { background: rgba(34, 197, 94, 0.2); color: #86efac; }
+        .badge-fun { background: rgba(234, 179, 8, 0.2); color: #fde047; }
+        .badge-off { background: rgba(239, 68, 68, 0.2); color: #fca5a5; }
+
+        /* --- MOBILE ADAPTIVE --- */
+        @media (max-width: 768px) {
+            h1 { font-size: 2.2rem; }
+            header { padding: 3rem 0 2rem; }
+            .about-card { padding: 1.5rem; }
+            .grid { grid-template-columns: 1fr; } /* Одна колонка на телефонах */
+            .bio-text { font-size: 1rem; }
+        }
+
+        /* Animation Keyframes */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <header>
+        <h1>Иван Пашков</h1>
+        <p style="color: var(--text-muted); font-size: 1.1rem;">Software Engineer | C/C++ Developer | Graphics Enthusiast</p>
+    </header>
+
+    <div class="about-card">
+        <h2 class="section-title">Обо мне</h2>
+        <div class="about-content">
+            <div class="bio-text">
+                <p>Привет! Я опытный инженер и студент. Окончил <strong>Санкт-Петербургский физико-математический лицей № 30</strong> и спецкурс компьютерной графики <strong>CGSG</strong>.</p>
+                <br>
+                <p>В настоящее время учусь в <strong>Университете ИТМО</strong> на факультете информационных технологий и программирования (ФИТиП), кафедра компьютерных технологий, группа <strong>М3138</strong>.</p>
+            </div>
+
+            <div>
+                <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 1px;">Технический стек:</p>
+                <div class="skills-container">
+                    <span class="skill-tag tag-main"><i class="fa-solid fa-microchip"></i> C / C++</span>
+                    <span class="skill-tag tag-secondary">x86-64 Assembly</span>
+                    <span class="skill-tag tag-secondary"><i class="fa-brands fa-python"></i> Python</span>
+                    <span class="skill-tag tag-secondary"><i class="fa-brands fa-js"></i> JavaScript</span>
+                    <span class="skill-tag tag-secondary">C#</span>
+                    <span class="skill-tag tag-secondary"><i class="fa-brands fa-java"></i> Java</span>
+                    <span class="skill-tag tag-secondary"><i class="fa-brands fa-php"></i> PHP</span>
+                    <span class="skill-tag tag-secondary">HTML/CSS</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <h2 class="section-title">Мои Проекты</h2>
+    <div class="grid">
+
+        <a href="01-fractal/" class="project-card">
+            <div class="card-header">
+                <i class="fa-solid fa-infinity folder-icon"></i>
+                <span class="badge badge-gl">WebGL</span>
+            </div>
+            <h3 class="project-title">Фрактал Жюлиа</h3>
+            <p class="project-desc">Рендеринг фрактальных множеств на GPU с использованием WebGL.</p>
+            <div class="card-footer">Открыть <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
+
+        <a href="02-anim/" class="project-card">
+            <div class="card-header">
+                <i class="fa-solid fa-shapes folder-icon"></i>
+                <span class="badge badge-gl">WebGL</span>
+            </div>
+            <h3 class="project-title">Фигуры Платона</h3>
+            <p class="project-desc">3D визуализация и анимация правильных многогранников.</p>
+            <div class="card-footer">Посмотреть <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
+
+        <a href="05-mspb/" class="project-card">
+            <div class="card-header">
+                <i class="fa-solid fa-map folder-icon"></i>
+                <span class="badge badge-map">MapLibre</span>
+            </div>
+            <h3 class="project-title">Метро СПБ</h3>
+            <p class="project-desc">Поиск оптимального маршрута по метро Санкт-Петербурга.</p>
+            <div class="card-footer">Построить маршрут <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
+
+        <a href="06-winparody/" class="project-card">
+            <div class="card-header">
+                <i class="fa-brands fa-windows folder-icon"></i>
+                <span class="badge badge-fun">Fun</span>
+            </div>
+            <h3 class="project-title">WinParody</h3>
+            <p class="project-desc">Развлекательный проект: пародийный интерфейс ОС Windows в браузере.</p>
+            <div class="card-footer">Запустить <i class="fa-solid fa-arrow-right"></i></div>
+        </a>
+
+        <a href="https://kisel001-chat.glitch.me" class="project-card" target="_blank">
+            <div class="card-header">
+                <i class="fa-solid fa-comments folder-icon" style="color: #ef4444;"></i>
+                <span class="badge badge-off">Offline</span>
+            </div>
+            <h3 class="project-title">Онлайн Чат</h3>
+            <p class="project-desc">Fullstack приложение для общения. (Glitch хостинг сейчас не активен).</p>
+            <div class="card-footer" style="color: #ef4444;">Архив <i class="fa-solid fa-external-link-alt"></i></div>
+        </a>
+
+    </div>
+
+    <footer style="text-align: center; color: var(--text-muted); padding: 3rem 0; font-size: 0.9rem;">
+        <p>&copy; 2025 Kisel Studios. All rights reserved. Developed in St. Peterseburg.</p>
+    </footer>
+
+</div>
+
+</body>
 </html>
