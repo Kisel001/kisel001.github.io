@@ -9,8 +9,8 @@
 /* Variables for FPS timer */
 let oldsec = -1;
 let frame = 0;
-let xClick = -1000,
-  yClick = -1000;
+let xClick = 0,
+  yClick = 0;
 
 let canvas, gl;
 
